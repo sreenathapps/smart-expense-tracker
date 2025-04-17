@@ -12,8 +12,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "expenses")
-public class Expenses { 
-    
+public class Expenses {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,4 +23,3 @@ public class Expenses {
     private String category;
     private LocalDate date = LocalDate.now();
 }
- 
