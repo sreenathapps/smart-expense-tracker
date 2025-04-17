@@ -14,6 +14,7 @@ public class ExpenseService implements ExpenseRepository {
     @Autowired
     private ExpenseJpaRepository expenseRepository;
 
+    @Override
     public Expenses addExpense(Expenses expense) {
         return expenseRepository.save(expense);
     }
