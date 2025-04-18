@@ -10,13 +10,15 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.saiapps.expensetracker.repository.AIRepository;
+
 @Service
-public class AIService {
+public class AIService implements AIRepository {
 
     @Value("${openai.api.key}")
-    private String miniToolApiKey; // API Key should be in your application.properties or application.yml
+    private String geminiApiKey; // Use the Gemini API Key
     @Value("${api.url.env}")
-    private String MINITOOL_API_URL; // Use the appropriate URL for MiniTool AI API
+    private String GEMINI_API_URL; // Use the appropriate Gemini API URL
 
     private final HttpClient httpClient;
 
@@ -25,49 +27,68 @@ public class AIService {
     }
 
     /**
-     * Calls the MiniTool AI API to classify the expense description into a
+     * Calls the Gemini AI API to classify the expense description into a
      * category.
-     * 
+     *
      * @param description The description of the expense.
      * @return The categorized expense type.
      */
+    @Override
     public String categorizeExpense(String description) {
         try {
-            // Build the request body to simulate the conversation (including system, user,
-            // assistant roles)
-            JSONArray requestBody = new JSONArray();
-            requestBody.put(new JSONObject().put("role", "system").put("content", "You are a helpful assistant."));
-            requestBody.put(
-                    new JSONObject().put("role", "user").put("content", "Categorize this expense in ONE word (Food, Travel, Shopping, Entertainment, Bills, Other)" + description));
+            // Build the request body to simulate the conversation
+            JSONObject requestBody = new JSONObject();
+            JSONArray contents = new JSONArray();
+            JSONObject content = new JSONObject();
+            JSONArray parts = new JSONArray();
+            JSONObject part = new JSONObject();
+
+            part.put("text",
+                    "Categorize this expense in ONE word (Food, Travel, Shopping, Entertainment, Bills, Electronics, Other): "
+                            + description);
+            parts.put(part);
+            content.put("role", "user");
+            content.put("parts", parts);
+            contents.put(content);
+
+            requestBody.put("contents", contents);
+
+            // Construct the Gemini API URL with the API key
+            String url = GEMINI_API_URL + geminiApiKey;
 
             // Build the HttpRequest with appropriate headers and body
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(MINITOOL_API_URL))
+                    .uri(URI.create(url))
                     .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + miniToolApiKey) // Authorization header for API key
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                     .build();
 
             // Send the HTTP request and receive the response
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Check the response status code
+            // Log the response for debugging (you can remove this after confirming the
+            // structure)
+            System.out.println("Response: " + response.body());
+
             if (response.statusCode() == 200) {
                 // Parse the response using org.json
                 JSONObject responseBody = new JSONObject(response.body());
-                JSONArray choices = responseBody.getJSONArray("choices");
 
-                // Assuming the assistant's reply (the last choice) contains the category
-                String category = choices.getJSONObject(0).getString("content").trim();
-
+                String category = responseBody.getJSONArray("candidates")
+                        .getJSONObject(0)
+                        .getJSONObject("content")
+                        .getJSONArray("parts")
+                        .getJSONObject(0)
+                        .getString("text")
+                        .trim();
                 return category;
             } else {
-                // Handle non-200 responses
-                return "Error: Unable to categorize expense";
+                return "Others";
             }
-        } catch (Exception e) {
 
-            return e.toString(); // Default if an error occurs
+        } catch (Exception e) {
+            return "Other";
         }
+
     }
 }
