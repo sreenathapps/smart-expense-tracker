@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { CATEGORIES, Category, Expense } from '../types/expense';
-import { generateId } from '../utils/formatters';
+import { generateLongId } from '../utils/formatters';
 
 interface ExpenseFormProps {
   onAddExpense: (expense: Expense) => void;
@@ -33,7 +33,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense }) => {
     
     // Create new expense object
     const newExpense: Expense = {
-      id: generateId(),
+      id: generateLongId(),
       description: description.trim(),
       amount: parseFloat(amount),
       category,
