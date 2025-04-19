@@ -80,7 +80,6 @@ Smart Expense Tracker is a full-stack web application built to help users manage
 ## Future Enhancements 🔮
 
 - Add user authentication with JWT.
-- Integrate a persistent database like PostgreSQL.
 - Implement advanced analytics for spending patterns.
 
 ## Contributing 🤝
@@ -89,6 +88,6 @@ Contributions are welcome! Please fork the repo, create a new branch, and submit
 
 ## Contact 📬
 
-For queries, reach out via [LinkedIn](https://www.linkedin.com/in/saisreenath-mandaloju) or email: your-saisreenath.mandaloju@gmail.com.
+For queries, reach out via [LinkedIn](https://www.linkedin.com/in/saisreenath-mandaloju) or email: saisreenath.mandaloju@gmail.com.
 
 #Java #SpringBoot #React #Docker #FullStack #WebDevelopment
